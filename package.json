@@ -18,6 +18,7 @@
   "homepage": "https://github.com/skekre98/Smile-Bot#readme",
   "dependencies": {
     "axios": "^0.19.0",
+    "natural": "^0.6.3",
     "slackbots": "^1.2.0"
   }
 }
