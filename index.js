@@ -1,5 +1,14 @@
 const SlackBot = require('slackbots');
 const axios = require('axios');
+var natural = require('natural');
+var nlp = new natural.BayesClassifier();
+
+nlp.addDocument('Chuck Norris', 'chuck');
+nlp.addDocument('chuck', 'chuck');
+nlp.addDocument('random', 'rand');
+nlp.addDocument('anything', 'rand');
+ 
+nlp.train();
 
 const bot = new SlackBot({
   token: process.env.SLACK_TOKEN,
@@ -27,11 +36,14 @@ bot.on('message', data => {
   if (data.type !== 'message') {
     return;
   }
-
-  handleMessage(data.text);
+  if (data.subtype !== 'bot_message') {
+    handleMessage(data.text);
+  }
 });
 
-// Respons to Data
+// Responds to Data
 function handleMessage(message) {
-//   TODO
+    if (nlp.classify(message) === 'chuck') {
+        
+    }
 }
