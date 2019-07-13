@@ -5,8 +5,10 @@ var nlp = new natural.BayesClassifier();
 
 nlp.addDocument('Chuck Norris', 'chuck');
 nlp.addDocument('chuck', 'chuck');
+nlp.addDocument('god', 'chuck');
 nlp.addDocument('random', 'rand');
 nlp.addDocument('anything', 'rand');
+nlp.addDocument('joke', 'rand');
  
 nlp.train();
 
@@ -43,8 +45,16 @@ bot.on('message', data => {
 
 // Responds to Data
 function handleMessage(message) {
-    if (nlp.classify(message) === 'chuck') {
-        chuckJoke()
+    var classes = nlp.getClassifications(message);
+    if (classes[0].value === classes[1].value) {
+        const params = {
+            icon_emoji: ':question:'
+          };
+        bot.postMessageToChannel('general', "Sorry I didn't understand that. Is there anything I can help you with?", params);
+    } else if (classes[0].label === 'chuck') {
+        chuckJoke();
+    } else if (classes[0].label === 'rand') {
+        randJoke();
     }
 }
 
@@ -59,4 +69,23 @@ function chuckJoke() {
   
       bot.postMessageToChannel('general', joke, params);
     });
-  }
+}
+
+function randJoke() {
+    axios.get('https://sv443.net/jokeapi/category/Dark?blacklistFlags=nsfw').then(res => {
+      if (res.data.type === 'twopart') {
+        const params = {
+            icon_emoji: ':laughing:'
+        };
+        bot.postMessageToChannel('general', res.data.setup, params);
+        setTimeout(function() {
+            bot.postMessageToChannel('general', res.data.delivery, params);
+        }, 5000);
+      } else {
+        const params = {
+            icon_emoji: ':laughing:'
+        };
+        bot.postMessageToChannel('general', res.data.joke, params);
+      }
+    });
+}
